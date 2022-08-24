@@ -7,28 +7,23 @@ import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
 export const Sidebar = () =>
 {
     return (
-        <Container>
 
+        <Container>
             <Header>
                 <Avatar/>
-
                 <div className='w-25 h-50 d-flex justify-content-evenly align-items-center'>
                    <Button>
                        <MessageOutlinedIcon/>
                    </Button>
-
                     <Button>
                         <MoreVertIcon/>
                     </Button>
-
                 </div>
-
             </Header>
-
-
         </Container>
     )
 }
+
 
 const Container = styled.div`
   width: 20vw;
