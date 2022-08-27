@@ -18,4 +18,5 @@ initializeApp(firebaseConfig);
 export const db = getFirestore()
 export const auth = getAuth()
 export const userCollection = collection(db , 'user')
+export const chatCollection = collection(db , 'chats')
 export const googleProvider = new GoogleAuthProvider()
