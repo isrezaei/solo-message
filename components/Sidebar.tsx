@@ -68,7 +68,7 @@ export const Sidebar = () =>
             </Submit>
 
             <Body>
-                {showChat?.docs.map(users => <Chats key={users.id} id={users.id} users={users.data().userChats}/>)}
+                {showChat?.docs.map(  users => <Chats key={users.id} id={users.id} users={users.data().userChats}/>)}
             </Body>
 
 
@@ -78,7 +78,7 @@ export const Sidebar = () =>
 
 
 const Container = styled.div`
-  width: 20vw;
+  width: 25vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -87,7 +87,7 @@ const Container = styled.div`
   background: #e8e8e8;
 `
 const Header = styled.div`
-  width: 100%;
+  width: 80%;
   height: 3vw;
   border-bottom: .2vw solid whitesmoke;
   padding: .8vw;

@@ -6,10 +6,13 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {useCollection} from "react-firebase-hooks/firestore";
 import styled from "styled-components";
 import {Avatar} from "@mui/material";
+import {useRouter} from "next/router";
 
 export const Chats = ({id , users} : {id : string , users : any}) => {
 
     const [authData] = useAuthState(auth)
+
+    const router = useRouter()
 
     const findExistUsersInDatabase = query(userCollection , where('email' , '==' , RecipientEmails(authData?.email , users)))
 
@@ -17,24 +20,29 @@ export const Chats = ({id , users} : {id : string , users : any}) => {
 
     const eachPersonInChatData = existUserData?.docs.map(eachPersonData => eachPersonData.data())
 
-    return eachPersonInChatData?.map(data => {
+    const goToChat = () => router.push(id)
 
-            return (
-                <Container key={data.email}>
-
-
-                    {data?.photoUrl ?
-                        <Avatar src={data?.photoUrl}/>
-                        :
-                        <Avatar>{data?.email[0]}</Avatar>
-                    }
-
-                    <p>{data.email}</p>
+    return (
+        <>
+            {
+                eachPersonInChatData?.map(data => {
+                    return (
+                        <Container key={data?.email} onClick={goToChat}>
 
 
-                </Container>
-            )
-        })
+                            {data?.photoUrl ?
+                                <Avatar src={data?.photoUrl}/>
+                                :
+                                <Avatar>{data?.email[0]}</Avatar>
+                            }
+
+                            <p>{data?.email}</p>
+                        </Container>
+                    )
+                })
+            }
+        </>
+    )
 
 }
 
