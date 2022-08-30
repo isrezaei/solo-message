@@ -4,7 +4,7 @@ import {useEffect} from "react";
 import {addDoc,serverTimestamp} from "@firebase/firestore";
 import {auth,userCollection} from "../Firebase";
 import '../styles/globals.css'
-import {Login} from "./Login";
+import {Login} from "../components/Login";
 import styled from "styled-components";
 
 function MyApp({ Component, pageProps }: AppProps) {

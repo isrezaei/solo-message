@@ -11,7 +11,6 @@ export const Login = () =>
         signInWithPopup(auth , googleProvider)
     }
 
-
     return (
         <Container>
             <LoginPanel>
@@ -20,7 +19,6 @@ export const Login = () =>
         </Container>
     )
 }
-
 
 const Container = styled.div`
 

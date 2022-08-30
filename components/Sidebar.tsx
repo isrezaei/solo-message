@@ -40,12 +40,14 @@ export const Sidebar = () =>
         }
     }
 
+    console.log(authData?.photoURL)
 
     return (
 
         <Container>
             <Header>
-                <Avatar src={authData?.photoURL}/>
+
+                <Avatar src={authData?.photoURL as any}/>
 
                 <div className='w-75 h-50 d-flex justify-content-end align-items-center'>
                     <Button>
