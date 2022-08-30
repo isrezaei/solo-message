@@ -16,6 +16,7 @@ import {signOut} from "@firebase/auth";
 export const Sidebar = () =>
 {
     const [email , setEmail] = useState<string>('')
+
     const [authData] = useAuthState(auth)
 
     const specificChat = query(chatCollection , where('userChats' , 'array-contains' , authData?.email))
@@ -26,6 +27,7 @@ export const Sidebar = () =>
     const checkUserExist = () => !!showChat?.docs.find((doc) => doc.data().userChats.find((dataEmail : any) => dataEmail === email)?.length > 0)
 
 
+    // console.log(!checkUserExist())
 
     const createChats = () =>
     {
@@ -36,16 +38,14 @@ export const Sidebar = () =>
                 userChats : [authData?.email , email]
             })
         }
-
     }
 
-    console.log(authData?.photoURL)
 
     return (
 
         <Container>
             <Header>
-                <Avatar src={authData?.photoURL} />
+                <Avatar/>
 
                 <div className='w-25 h-50 d-flex justify-content-evenly align-items-center'>
                     <Button>

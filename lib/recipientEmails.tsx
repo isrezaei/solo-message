@@ -1,4 +1,4 @@
-export const RecipientEmails = (dataBaseEmail : string | undefined | null, loginEmail : []) =>
+export const RecipientEmails = (hostEmail : string | undefined | null, chatArray : []) =>
 {
-    return  loginEmail.filter(emails => emails !== dataBaseEmail)[0]
+    return  chatArray.filter(emails => emails !== hostEmail)[0]
 }

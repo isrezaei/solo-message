@@ -7,15 +7,11 @@ import {Sidebar} from "../components/Sidebar";
 import {ChatRooms} from "../components/ChatRooms";
 
 
-const showChats = ({messages} : {messages : []}) => {
-
-    console.log(messages)
-
+const showChats = ({messages , chatArray} : {messages : [] , chatArray : []}) => {
     return (
         <Container>
             <Sidebar/>
-            <ChatRooms message={messages}/>
-
+            <ChatRooms chatArray={chatArray} message={messages}/>
         </Container>
     )
 }
@@ -24,28 +20,42 @@ export default showChats
 
 export const getServerSideProps = async (context: any) => {
 
-
     const specificChatData = doc(db, 'chats', context.params.id)
 
+    //Recognize message collection and ready to fetch data
     const messageData = await query(collection(specificChatData, 'message'), orderBy('timeStamp', 'asc'))
 
-    let saveMessageData : any = []
 
+    //Fetch message collection data and put in array
+    let saveMessageData : any = []
     await getDocs(messageData)
         .then((snapShot) => snapShot.docs.forEach(messageData => saveMessageData.push({...messageData.data() , id : messageData.id})) )
 
-    console.log(saveMessageData)
-
-
+    //Handel Timestamp
     const currentMessage = saveMessageData.map((message : any) => ({...message , timeStamp : message.timeStamp.toDate().getTime()}))
+    //all message in database
+    // {
+    //     message: 'example',
+    //     hostUserAvatar: 'example',
+    //     hostUserEmail: 'example@yahoo.com',
+    //     timeStamp: example,
+    //     id: 'example'
+    // }
 
-    console.log(currentMessage)
+
+
+    const chatArray = await getDoc(specificChatData).then(doc => doc.data()?.userChats)
+    // [ 'host@gmail.com', 'gust@yahoo.com' ]
+    // [ 'host@gmail.com', 'gust@yahoo.com' ]
+
+
+
 
     return {
         props : {
-            messages : currentMessage
-
-        }
+            messages : currentMessage,
+            chatArray
+        },
     }
 }
 

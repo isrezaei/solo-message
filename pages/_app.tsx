@@ -5,6 +5,7 @@ import {addDoc,serverTimestamp} from "@firebase/firestore";
 import {auth,userCollection} from "../Firebase";
 import '../styles/globals.css'
 import {Login} from "./Login";
+import styled from "styled-components";
 
 function MyApp({ Component, pageProps }: AppProps) {
 
@@ -27,7 +28,15 @@ function MyApp({ Component, pageProps }: AppProps) {
   if (loading) return 'Loading'
   if (!authData) return <Login/>
 
-  return <Component {...pageProps} />
+
+  return (
+      <Component {...pageProps} />
+  )
 }
 
 export default MyApp
+
+
+const Container = styled.div `
+
+`
