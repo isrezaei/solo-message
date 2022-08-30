@@ -45,26 +45,22 @@ export const Sidebar = () =>
 
         <Container>
             <Header>
-                <Avatar/>
+                <Avatar src={authData?.photoURL}/>
 
-                <div className='w-25 h-50 d-flex justify-content-evenly align-items-center'>
+                <div className='w-75 h-50 d-flex justify-content-end align-items-center'>
                     <Button>
-                        <MessageOutlinedIcon/>
-                    </Button>
-                    <Button>
-                        <MoreVertIcon/>
+                        <MessageOutlinedIcon className='text-light'/>
                     </Button>
 
                     <Button>
-                       <p onClick={()=> signOut(auth)}>Logout</p>
+                       <p className='text-light' onClick={()=> signOut(auth)}>Logout</p>
                     </Button>
-
                 </div>
             </Header>
 
             <Submit>
-                <input value={email} onChange={(e)=> setEmail(e.target.value)} className='w-75 bg-light border-0'/>
-                <button onClick={createChats} type='button' className='btn btn-info h-75 d-flex justify-content-center align-items-center'>submit</button>
+                <input value={email} onChange={(e)=> setEmail(e.target.value)} className='w-50 h-50  bg-light border-0 rounded-2'/>
+                <button onClick={createChats} type='button' className='btn btn-outline-light h-50 d-flex justify-content-center align-items-center'>submit</button>
             </Submit>
 
             <Body>
@@ -78,37 +74,70 @@ export const Sidebar = () =>
 
 
 const Container = styled.div`
-  width: 25vw;
-  height: 100vh;
+  width: 90vw;
+  height: 95vh;
   display: flex;
   flex-direction: column;
   justify-items: start;
   align-items: center;
-  background: #e8e8e8;
+  margin: auto;
+  background: #424242;
+
+
+  @media screen and (max-width: 480px) {
+    width: 90vw;
+    height: 90vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+
 `
 const Header = styled.div`
-  width: 80%;
+  width: 100%;
   height: 3vw;
   border-bottom: .2vw solid whitesmoke;
   padding: .8vw;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
+
+  @media screen and (max-width: 480px)
+  {
+    height: 20vw;
+  }
+  
 `
 const Submit = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+
+  @media screen and (max-width: 480px)
+  {
+    width: 100%;
+    height: 15vw;
+    background: #212121;
+  }
+  
 `
 
 const Body = styled.div`
-  width: 95%;
-  height: 40vw;
+  width: 100%;
+  height: auto;
   display: flex;
   margin-top: 1vw;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: blanchedalmond;
+  //background: blanchedalmond;
+  overflow-y: scroll;
+
+  @media screen and (max-width: 480px)
+  {
+    margin-top: 5vw;
+  }
 
 `

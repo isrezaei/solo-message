@@ -7,11 +7,12 @@ import {Sidebar} from "../components/Sidebar";
 import {ChatRooms} from "../components/ChatRooms";
 
 
-const showChats = ({messages , chatArray} : {messages : [] , chatArray : []}) => {
+const showChats = ({messages , chatArray} : {messages : string , chatArray : []}) => {
+
+
     return (
         <Container>
-            <Sidebar/>
-            <ChatRooms chatArray={chatArray} message={messages}/>
+            <ChatRooms chatArray={chatArray} message={JSON.parse(messages)}/>
         </Container>
     )
 }
@@ -27,12 +28,12 @@ export const getServerSideProps = async (context: any) => {
 
 
     //Fetch message collection data and put in array
-    let saveMessageData : any = []
+    let currentMessage : any = []
     await getDocs(messageData)
-        .then((snapShot) => snapShot.docs.forEach(messageData => saveMessageData.push({...messageData.data() , id : messageData.id})) )
+        .then((snapShot) => snapShot.docs.forEach(messageData => currentMessage.push({...messageData.data() , id : messageData.id})) )
 
     //Handel Timestamp
-    const currentMessage = saveMessageData.map((message : any) => ({...message , timeStamp : message.timeStamp.toDate().getTime()}))
+    // const currentMessage = saveMessageData.map((message : any) => ({...message}))
     //all message in database
     // {
     //     message: 'example',
@@ -49,11 +50,11 @@ export const getServerSideProps = async (context: any) => {
     // [ 'host@gmail.com', 'gust@yahoo.com' ]
 
 
-
+    console.log(currentMessage)
 
     return {
         props : {
-            messages : currentMessage,
+            messages : JSON.stringify(currentMessage),
             chatArray
         },
     }
@@ -63,7 +64,7 @@ export const getServerSideProps = async (context: any) => {
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background: gainsboro;
+  background: black;
   display: flex;
   justify-content: space-between;
   align-items: center;

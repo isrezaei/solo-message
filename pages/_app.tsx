@@ -30,7 +30,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 
   return (
-      <Component {...pageProps} />
+
+        <Component {...pageProps} />
+
   )
 }
 
@@ -39,4 +41,21 @@ export default MyApp
 
 const Container = styled.div `
 
+  background: magenta;
+  
+  
+  @media screen and (max-width: 480px)
+  {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `

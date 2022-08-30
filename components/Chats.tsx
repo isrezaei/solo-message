@@ -31,12 +31,12 @@ export const Chats = ({id , users} : {id : string , users : any}) => {
 
 
                             {data?.photoUrl ?
-                                <Avatar src={data?.photoUrl}/>
+                                <Avatar className='ms-2' src={data?.photoUrl}/>
                                 :
-                                <Avatar>{data?.email[0]}</Avatar>
+                                <Avatar className='ms-2'>{data?.email[0]}</Avatar>
                             }
 
-                            <p>{data?.email}</p>
+                            <p className='ms-2 text-white fw-bold fs-6'>{data?.email}</p>
                         </Container>
                     )
                 })
@@ -51,9 +51,15 @@ const Container = styled.div`
 
   width: 90%;
   height: 4vw;
-  background: aqua;
+  background: #757575;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   align-items: center;
+  border-radius: 3vw;
+
+  @media screen and (max-width: 480px)
+  {
+    height: 15vw;
+  }
 
 `
