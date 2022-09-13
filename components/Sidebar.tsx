@@ -40,8 +40,6 @@ export const Sidebar = () =>
         }
     }
 
-    console.log(authData?.photoURL)
-
     return (
 
         <Container>

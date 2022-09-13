@@ -1,8 +1,8 @@
 import type {AppProps} from 'next/app'
 import {useAuthState} from "react-firebase-hooks/auth";
-import {useEffect} from "react";
-import {addDoc,serverTimestamp} from "@firebase/firestore";
-import {auth,userCollection} from "../Firebase";
+import {useEffect, useLayoutEffect} from "react";
+import {addDoc,serverTimestamp , setDoc ,doc} from "@firebase/firestore";
+import {auth, db, userCollection} from "../Firebase";
 import '../styles/globals.css'
 import {Login} from "../components/Login";
 import styled from "styled-components";
@@ -11,11 +11,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [authData , loading] = useAuthState(auth)
 
-  useEffect(()=> {
+  useLayoutEffect(()=> {
 
     if (authData)
     {
-      addDoc(userCollection , {
+      setDoc(doc(db , 'user' , authData.uid) , {
         email : authData.email ,
         photoUrl : authData.photoURL ,
         lastSeen : serverTimestamp()
@@ -24,25 +24,31 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   } , [authData])
 
+  console.log(authData)
+
 
   if (loading) return 'Loading'
+
   if (!authData) return <Login/>
 
 
   return (
-
+      <Container>
         <Component {...pageProps} />
-
+      </Container>
   )
 }
 
 export default MyApp
 
 
-const Container = styled.div `
 
-  background: magenta;
-  
+
+
+
+
+
+const Container = styled.div `
   
   @media screen and (max-width: 480px)
   {

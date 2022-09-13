@@ -9,6 +9,8 @@ export const Login = () =>
     const signInWithGoogle = () =>
     {
         signInWithPopup(auth , googleProvider)
+
+
     }
 
     return (
@@ -20,8 +22,10 @@ export const Login = () =>
     )
 }
 
-const Container = styled.div`
 
+
+
+const Container = styled.div`
   width: 100vh;
   background: whitesmoke;
 `
