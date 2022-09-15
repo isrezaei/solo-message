@@ -30,7 +30,7 @@
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "@types/styled-components": "^5.1.26",
-    "autoprefixer": "^10.4.10",
+    "autoprefixer": "^10.4.11",
     "babel-plugin-styled-components": "^2.0.7",
     "eslint": "8.22.0",
     "eslint-config-next": "12.2.5",

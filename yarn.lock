@@ -1259,10 +1259,10 @@
   "resolved" "https://registry.npmjs.org/ast-types-flow/-/ast-types-flow-0.0.7.tgz"
   "version" "0.0.7"
 
-"autoprefixer@^10.4.10":
-  "integrity" "sha512-nMaiDARyp1e74c8IeAXkr+BmFKa8By4Zak7tyaNPF09Iu39WFpNXOWrVirmXjKr+5cOyERwvtbMOLYz6iBJYgQ=="
-  "resolved" "https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.4.10.tgz"
-  "version" "10.4.10"
+"autoprefixer@^10.4.11":
+  "integrity" "sha512-5lHp6DgRodxlBLSkzHOTcufWFflH1ewfy2hvFQyjrblBFlP/0Yh4O/Wrg4ow8WRlN3AAUFFLAQwX8hTptzqVHg=="
+  "resolved" "https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.4.11.tgz"
+  "version" "10.4.11"
   dependencies:
     "browserslist" "^4.21.3"
     "caniuse-lite" "^1.0.30001399"

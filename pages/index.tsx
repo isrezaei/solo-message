@@ -14,18 +14,13 @@ const Home: NextPage = (props) => {
 
     let render ;
 
-    if (loading)
+    if (user)
     {
-        render = <h1>Loading...</h1>
+        render = <ChatsCollection/>
     }
     if (!user)
     {
         render = <Login/>
-    }
-
-    if (user)
-    {
-        render = <ChatsCollection/>
     }
 
     useEffect(()=> {
@@ -43,16 +38,11 @@ const Home: NextPage = (props) => {
 
             <Head>
                 <title>Solo Message</title>
-                <link rel="icon" href="/favicon.ico" />
-                <link rel="preconnect" href="https://fonts.googleapis.com"/>
-                <link rel="preconnect" href="https://fonts.gstatic.com"/>
-                <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet"/>
-
             </Head>
 
 
             <Home_Container>
-                {render}
+                {loading ? <p className='text-lg'>Loading ...</p> : render}
             </Home_Container>
 
         </>
