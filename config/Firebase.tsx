@@ -1,7 +1,6 @@
 import {initializeApp} from "@firebase/app";
-import {getFirestore , collection} from "@firebase/firestore";
-import {getAuth , GoogleAuthProvider} from "@firebase/auth";
-
+import {getFirestore} from "@firebase/firestore";
+import {getAuth} from "@firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyC-aoSLTqIb2b3s3uKlTrFuwJeA5pRqQD4",
@@ -12,11 +11,7 @@ const firebaseConfig = {
     appId: "1:462760800868:web:24c52369231e690a69a571"
 };
 
-// Initialize Firebase
 initializeApp(firebaseConfig);
 
 export const db = getFirestore()
 export const auth = getAuth()
-export const userCollection = collection(db , 'user')
-export const chatCollection = collection(db , 'chats')
-export const googleProvider = new GoogleAuthProvider()
