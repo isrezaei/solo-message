@@ -5,12 +5,14 @@ import {auth, db} from "../config/Firebase";
 import {Login} from "../components/Login/Login";
 import {useAuthState} from 'react-firebase-hooks/auth';
 import {ChatsCollection} from "../components/Chats.Collection/Chats.Collection";
-import {doc, setDoc , serverTimestamp} from "@firebase/firestore";
+import {doc, setDoc, serverTimestamp, collection} from "@firebase/firestore";
 import styled from "styled-components";
+import {useCollectionData} from "react-firebase-hooks/firestore";
 
 const Home: NextPage = (props) => {
 
     const [user, loading , error] = useAuthState(auth);
+
 
     let render ;
 

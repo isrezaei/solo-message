@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import {Avatar} from "@mui/material";
 
 export const Chats_Rooms_Container = styled.div`
   width: 100%;
@@ -28,6 +29,25 @@ export const Body = styled.div`
     display: none;
   }
 `
+
+export const EachMessage = styled.div`
+  width: 15rem;
+  min-height: 5rem;
+  padding: .3rem .5rem;
+  position: relative;
+  color: whitesmoke;
+  border-radius: 1rem;
+  align-items: flex-start;
+  background: ${({condition} : {condition : any} ) => condition.msgData === condition.user ? '#7e57c2'  : '#616161'};
+  margin: ${({condition} : {condition : any} ) => condition.msgData === condition.user ? '1rem 0rem 1rem auto' : '1rem auto 1rem 0'  };
+`
+
+export const EachAvatar = styled(Avatar)`
+  position: absolute!important;
+  bottom: .3rem;
+  right: .4rem;
+`
+
 
 export const Footer = styled.div`
 

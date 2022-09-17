@@ -1,4 +1,4 @@
-import {Chats_Rooms_Container , Header , Body , Footer} from "./Chats.Rooms.Style";
+import {Chats_Rooms_Container , Header , Body , EachMessage , EachAvatar , Footer} from "./Chats.Rooms.Style";
 import {useRouter} from "next/router";
 import {
     useCollectionData,
@@ -19,11 +19,12 @@ import SendIcon from '@mui/icons-material/Send';
 import {useState} from "react";
 import TimeAgo from 'timeago-react'
 import moment from "moment";
+import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
 
 
 
 
-export const ChatsRooms = () =>
+export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {serverSideMessage : any , serverSideUsersLoginData : any}) =>
 {
 
     const [user] = useAuthState(auth)
@@ -35,23 +36,35 @@ export const ChatsRooms = () =>
 
     const [snapshot , loading , error] = useCollectionData(selectQuery)
 
-    const message = snapshot?.map(value => {
 
-        return (
-            <div key={Math.random()}>
+    const MessageRender = () =>
+    {
+        if (snapshot)
+        {
+            //get message from firebase
+            return snapshot?.map((msgData : any) => {
+                return (
+                    <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
+                            <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
+                            <p className='w-32 text-sm'>{msgData?.text}</p>
+                            <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp?.toDate()?.getTime())?.format('LT')}</p>
+                    </EachMessage>
+                )
+            })
+        }
 
-                <div className={`
-                w-52 min-h-[4rem] px-2 py-1 my-8 relative text-white h-auto rounded-xl flex flex-col justify-between item-center
-                 ${user?.email === value.email ? 'bg-purple-700 ml-auto' : 'bg-neutral-500  mr-auto'}`}>
+        //get message data from server side for first render
+        return serverSideMessage.map((msgData : any) => {
+            return (
+                <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
+                        <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
+                        <p className='w-32 text-sm'>{msgData?.text}</p>
+                        <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
+                </EachMessage>
+            )
+        })
+    }
 
-                    <Avatar className='absolute bottom-1 right-[.3rem]' src={value.photo as string}>{value.name?.slice(0,2).toUpperCase()}</Avatar>
-                    <p className='w-32 text-sm'>{value.text}</p>
-                    <p className='text-[.8rem] mt-5'>{moment(value.timeStamp?.toDate().getTime()).format('LT')}</p>
-                </div>
-
-            </div>
-        )
-    })
 
     const sendMessage = () =>
     {
@@ -69,23 +82,15 @@ export const ChatsRooms = () =>
     }
 
 
-    const [chat] = useDocumentData(doc(db , `USERS_CHAT/${router.query.id}`))
-    const hostEmail = chat?.users?.filter((emails : any) => emails !== user?.email)[0]
-    //*******
-
-    const getHostCollection = hostEmail && query(collection(db , 'USERS_LOGIN') ,  where('email' , '=='  , hostEmail))
-
-    const [HostData] = useCollectionDataOnce(getHostCollection)
-
-    const HeaderChat = HostData?.map(host => {
+    const HeaderChat = serverSideUsersLoginData.filter((loginUsers : any) => loginUsers.email !== user?.email)?.map((guest : any) => {
         return (
             <div className={'w-full h-full flex flex-col justify-center items-center'} key={Math.random()}>
-                <Avatar src={host?.photo}>{host?.name?.slice(0,2).toUpperCase()}</Avatar>
-                <p className='font-bold text-[1rem] text-neutral-800'>{host?.name}</p>
+                <Avatar src={guest?.photo}>{guest?.name?.slice(0,2).toUpperCase()}</Avatar>
+                <p className='font-bold text-[1rem] text-neutral-800'>{guest?.name}</p>
 
                 <div className='px-3 gap-1 flex justify-center items-center text-[.8rem] font-bold text-neutral-700'>
                     <p>Last Seen in</p>
-                    <TimeAgo datetime={host?.login?.toDate().getTime()} live={true}/>
+                    <TimeAgo datetime={guest?.login?.nanoseconds} live={true}/>
                 </div>
             </div>
         )
@@ -95,13 +100,12 @@ export const ChatsRooms = () =>
     return (
         <Chats_Rooms_Container>
 
-
             <Header>
                 {HeaderChat}
             </Header>
 
             <Body>
-                {loading ? <p className='text-white font-bold text-xl'>loading...</p> :  message}
+                <MessageRender/>
             </Body>
 
             <Footer>
