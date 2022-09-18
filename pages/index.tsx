@@ -8,10 +8,27 @@ import {ChatsCollection} from "../components/Chats.Collection/Chats.Collection";
 import {doc, setDoc, serverTimestamp, collection} from "@firebase/firestore";
 import styled from "styled-components";
 import {useCollectionData} from "react-firebase-hooks/firestore";
+import {useDispatch, useSelector} from "react-redux";
+import {FETCH_CHAT_DATA} from "../redux/reducer/Chats.Reducer";
 
 const Home: NextPage = (props) => {
 
     const [user, loading , error] = useAuthState(auth);
+
+    const CHATS_STATUS = useSelector((state : any) => state.ChatsReducer.status)
+    const dispatch = useDispatch()
+
+    // useEffect(() : any => {
+    //
+    //     if (CHATS_STATUS === 'idle') {
+    //         console.log('zzz')
+    //     }
+    //
+    // } , [CHATS_STATUS , dispatch])
+
+
+    // console.log(dispatch<any>(FETCH_CHAT_DATA()))
+
 
 
     let render ;
@@ -33,6 +50,8 @@ const Home: NextPage = (props) => {
             login : serverTimestamp()
         })
     } , [user])
+
+
 
 
     return (

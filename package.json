@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.10.1",
+    "@reduxjs/toolkit": "^1.8.5",
     "email-validator": "^2.0.4",
     "firebase": "^9.9.3",
     "moment": "^2.29.4",
@@ -20,9 +21,11 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-firebase-hooks": "^5.0.3",
+    "react-redux": "^8.0.2",
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.1",
     "styled-components": "^5.3.5",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "timeago-react": "^3.0.5"
   },
   "devDependencies": {

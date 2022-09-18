@@ -10,12 +10,19 @@ import {collection, addDoc} from "@firebase/firestore";
 import {useState} from "react"
 import {ChatsMessage} from "../Chats.Message/Chats.Message";
 import {ChatsLiveSearch} from "../Chats.LiveSearch/Chats.LiveSearch";
-
+import {useSelector , useDispatch} from "react-redux";
+import {selectChatEntities , selectIds , selectAll} from "../../redux/reducer/Chats.Reducer";
+import {useEffect} from "react";
+import {FETCH_CHAT_DATA} from "../../redux/reducer/Chats.Reducer";
+import {AnyAction} from "redux";
 
 export const ChatsCollection = () =>
 {
 
-    const [searchUser , SetSearchUser] = useState<string>('')
+
+    // const CHATS_DATA = useSelector((state : any) => selectAll(state))
+
+    const [searchUserInput , setSearchUserInput] = useState<string>('')
 
     const [user] = useAuthState(auth)
 
@@ -23,38 +30,43 @@ export const ChatsCollection = () =>
     const [usersChatSnapshot , loading] = useCollection(collection(db , 'USERS_CHAT'))
 
 
-    //check users exist in chats 2 point 2 Array , for preventing push duplicate guest user
+    // check users exist in chats 2 point 2 Array , for preventing push duplicate guest user
+
     const chatsSnapshot = usersChatSnapshot?.docs.map(items => ({id : items.id , ...items.data()}))
-    const existChat = !!chatsSnapshot?.find((value : any) => value.users.includes(searchUser))
+
+
+    const existChat = !!chatsSnapshot?.find((value : any) => value.users.includes(searchUserInput))
 
     //check users exit in database for chat with his
     const usersSnapshot = usersLoginsSnapshot?.docs.map(snapshot => snapshot.data())
-    const existUsersOnDatabase = !!usersSnapshot?.find(usersLogin => usersLogin.email === searchUser)
+    const existUsersOnDatabase = !!usersSnapshot?.find(usersLogin => usersLogin.email === searchUserInput)
 
 
     const startNewChat = () =>
     {
-        if (searchUser!== user?.email && !existChat && EmailValidator.validate(searchUser) && existUsersOnDatabase)
+        if (searchUserInput!== user?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
         {
-            addDoc(collection(db , 'USERS_CHAT') ,{users : [user?.email , searchUser]})
+            addDoc(collection(db , 'USERS_CHAT') ,{users : [user?.email , searchUserInput]})
         }
 
-        SetSearchUser('')
+        setSearchUserInput('')
     }
 
 
 
     let render ;
 
-    if (loading)
-    {
-        render = <p className='text-white text-lg mt-11'>Loading your chats ...</p>
-    }
-    if (!loading)
-    {
-        render = chatsSnapshot?.filter((chats: any) => chats.users.includes(user?.email))?.map((usersInChat: any) => <ChatsMessage key={Math.random()} id={usersInChat.id} usersInChat={usersInChat}/>)
-    }
+    // if (loading)
+    // {
+    //     render = <p className='text-white text-lg mt-11'>Loading your chats ...</p>
+    // }
+    // if (!loading)
+    // {
+    //
+    // }
 
+    render = chatsSnapshot?.filter((chats: any) => chats.users.includes(user?.email))
+        ?.map((usersInChat: any) => <ChatsMessage key={Math.random()} id={usersInChat.id} usersInChat={usersInChat}/>)
 
     return (
         <Chats_Collection_Container>
@@ -67,10 +79,10 @@ export const ChatsCollection = () =>
 
             <Body>
 
-                <input value={searchUser} placeholder='start new chat ...' className='placeholder:text-purple-500 w-9/12 my-3 p-1 font-bold text-purple-500 bg-transparent border-b-2 border-purple-700 outline-none'
-                       onChange={(e) => SetSearchUser(e.target.value)}/>
+                <input value={searchUserInput} placeholder='start new chat ...' className='placeholder:text-purple-500 w-9/12 my-3 p-1 font-bold text-purple-500 bg-transparent border-b-2 border-purple-700 outline-none'
+                       onChange={(e) => setSearchUserInput(e.target.value)}/>
 
-                <ChatsLiveSearch searchUser={searchUser}/>
+                <ChatsLiveSearch searchUser={searchUserInput}/>
 
                 <Button
                     variant="contained"
