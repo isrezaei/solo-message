@@ -3,12 +3,12 @@ import {getFirestore} from "@firebase/firestore";
 import {getAuth} from "@firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC-aoSLTqIb2b3s3uKlTrFuwJeA5pRqQD4",
-    authDomain: "solo-message-product.firebaseapp.com",
-    projectId: "solo-message-product",
-    storageBucket: "solo-message-product.appspot.com",
-    messagingSenderId: "462760800868",
-    appId: "1:462760800868:web:24c52369231e690a69a571"
+    apiKey: "AIzaSyAxTdcnmJCo4V5EsF-nRT3IVeJklXG41qY",
+    authDomain: "solomessage-1717c.firebaseapp.com",
+    projectId: "solomessage-1717c",
+    storageBucket: "solomessage-1717c.appspot.com",
+    messagingSenderId: "776341071807",
+    appId: "1:776341071807:web:33f124ff10eb6c929ea30a"
 };
 
 initializeApp(firebaseConfig);

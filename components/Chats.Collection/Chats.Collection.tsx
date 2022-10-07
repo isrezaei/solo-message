@@ -12,9 +12,11 @@ import {ChatsMessage} from "../Chats.Message/Chats.Message";
 import {ChatsLiveSearch} from "../Chats.LiveSearch/Chats.LiveSearch";
 import {useSelector , useDispatch} from "react-redux";
 import {selectChatEntities , selectIds , selectAll} from "../../redux/reducer/Chats.Reducer";
-import {useEffect} from "react";
+import {useEffect , useLayoutEffect} from "react";
 import {FETCH_CHAT_DATA} from "../../redux/reducer/Chats.Reducer";
 import {AnyAction} from "redux";
+import {RootState, useAppDispatch} from "../../redux/store/store";
+
 
 export const ChatsCollection = () =>
 {

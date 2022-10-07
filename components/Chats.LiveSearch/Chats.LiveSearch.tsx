@@ -20,10 +20,8 @@ export const ChatsLiveSearch = ({searchUser} : {searchUser : string}) =>
     const loginUserSnapShot = snapshot?.docs.map(users => ({id : users.id ,...users.data()}))
 
     const {debounce} = useDebounce(searchUser)
+
     useEffect(()=> {
-
-        console.log(debounce?.length)
-
        const findUserOnDatabase = loginUserSnapShot?.filter((users : any) => users.email !== user?.email)
            .filter((user: any) => user.email.split(" ").join("").toLowerCase().includes(debounce?.split(" ").join("").toLowerCase()))
 

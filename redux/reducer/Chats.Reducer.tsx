@@ -4,17 +4,12 @@ import {collection} from "@firebase/firestore";
 import {db} from "../../config/Firebase";
 
 
+
 export const FETCH_CHAT_DATA = createAsyncThunk('FETCH_CHAT_DATA' , async () => {
 
-    const [chatSnapshot] = useCollection(collection(db , 'USERS_CHAT'))
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1')
 
-
-    const X = await chatSnapshot?.docs.map(items => ({id : items.id , ...items.data()}))
-
-    console.log('hello')
-
-    return X
-
+     return (await response.json())
 })
 
 
@@ -26,7 +21,8 @@ const chatsReducer = createSlice({
 
     name : 'GET_CHAT_DATA',
     initialState : CHAT_ADAPTER.getInitialState({
-        status : 'idle'
+        status : 'idle',
+        value : 0
     }),
 
     reducers : {},
@@ -44,6 +40,7 @@ const chatsReducer = createSlice({
         })
         builder.addCase(FETCH_CHAT_DATA.rejected , (state , action) =>{
             state.status = 'reject'
+            console.log('some thing is wrong !')
         })
     })
 })
