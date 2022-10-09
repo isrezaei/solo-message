@@ -28,7 +28,7 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
     {
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
         {
-           return setDoc(doc(db , 'USERS_CHAT' , `${user?.email}`) ,{users : [auth.currentUser?.email  , searchUserInput]})
+           return addDoc(collection(db , 'USERS_CHAT') , {users : [auth.currentUser?.email  , searchUserInput]})
         }
         setSearchUserInput('')
     }
