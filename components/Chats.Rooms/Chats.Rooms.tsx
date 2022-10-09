@@ -28,6 +28,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     const [snapshot , loading , error] = useCollectionData(selectQuery)
 
 
+    //!notify
     useEffect(() : any => {
 
         const currentTime = new Date().getTime()
@@ -37,14 +38,15 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
         if (lastMessageFromGuest)
         {
-            const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
+            // const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
+
             Notification.requestPermission(permission => {
                 if (permission === 'granted')
                 {
                     return new Notification(`You have new message from ${name}` , {
-                        body : text,
-                        data : email,
-                        image : photo
+                        body :lastMessageFromGuest[0]?.text,
+                        data :lastMessageFromGuest[0]?.email,
+                        image :lastMessageFromGuest[0]?.photo
                     })
                 }
                 if (permission === 'denied')
@@ -125,7 +127,6 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                 <MessageRender/>
             </Body>
             <Footer>
-
                 <Input placeholder="Type ..." color={'secondary'}  size={'small'} value={inputText} onChange={e => setInputText(e.target.value)}
                        sx={{
                            '& > :not(style)': { color : 'white' , borderBottom : '1px solid white'},
@@ -134,9 +135,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                 <Button onClick={sendMessage} variant="outlined" color={'secondary'} endIcon={<SendIcon />}>
                     Send
                 </Button>
-
             </Footer>
-
         </Chats_Rooms_Container>
     )
 }
