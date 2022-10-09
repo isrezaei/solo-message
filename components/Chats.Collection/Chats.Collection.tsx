@@ -47,9 +47,6 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
         setSearchUserInput('')
     }
 
-    //
-    // console.log(SERVER_SIDE_DATA_BASE_CHATS_USERS)
-    // console.log(DATA_BASE_CHATS_USERS)
 
 
     let render ;
