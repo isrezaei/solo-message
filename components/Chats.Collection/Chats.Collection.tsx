@@ -6,11 +6,19 @@ import {db , auth} from "../../config/Firebase";
 import {signOut} from "@firebase/auth";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {useCollection} from "react-firebase-hooks/firestore";
-import {collection, addDoc, getDocs , setDoc , doc} from "@firebase/firestore";
+import {collection, addDoc, getDocs} from "@firebase/firestore";
 import {useState} from "react"
 import {ChatsMessage} from "../Chats.Message/Chats.Message";
 import {ChatsLiveSearch} from "../Chats.LiveSearch/Chats.LiveSearch";
 import {useSelector , useDispatch} from "react-redux";
+import {RESET_STATUS} from "../../redux/reducer/Chats.Reducer";
+import {StartNewChats} from "../../lib/StartNewChats";
+
+import {useEffect , useLayoutEffect} from "react";
+import ChatsReducer, {FETCH_CHAT_DATA} from "../../redux/reducer/Chats.Reducer";
+import {AnyAction} from "redux";
+import {RootState, useAppDispatch} from "../../redux/store/store";
+
 
 
 export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SIDE_DATA_BASE_CHATS_USERS : any}) =>
@@ -21,17 +29,27 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
 
     const [searchUserInput , setSearchUserInput] = useState<string>('')
 
+    const dispatch = useDispatch()
+
+
     const existChat = !!DATA_BASE_CHATS_USERS?.find((value : any) => value.users.includes(searchUserInput))
     const existUsersOnDatabase = !!DATA_BASE_LOGIN_USERS?.find((value : any) => value.email === searchUserInput)
+
+    console.log(searchUserInput!== auth.currentUser?.email)
 
     const startNewChat = () =>
     {
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
         {
-           return addDoc(collection(db , 'USERS_CHAT') , {users : [auth.currentUser?.email  , searchUserInput]})
+            addDoc(collection(db , 'USERS_CHAT') ,{users : [auth.currentUser?.email  , searchUserInput]})
         }
+        dispatch(RESET_STATUS())
         setSearchUserInput('')
     }
+
+    //
+    // console.log(SERVER_SIDE_DATA_BASE_CHATS_USERS)
+    // console.log(DATA_BASE_CHATS_USERS)
 
 
     let render ;
@@ -46,6 +64,7 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
         render = DATA_BASE_CHATS_USERS?.filter((chats: any) => chats.users.includes(user?.email))
             ?.map((usersInChat: any) => <ChatsMessage key={Math.random()} id={usersInChat.id} usersInChat={usersInChat}/>)
     }
+
 
     return (
         <Chats_Collection_Container>
@@ -71,7 +90,7 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
 
                 {render}
 
-                {/*{DATA_BASE_CHATS_USERS?.length === 0 && <p className='text-white mt-11 font-bold'>Welcome , start chat with u friends</p>}*/}
+                {SERVER_SIDE_DATA_BASE_CHATS_USERS?.length === 0 && <p className='text-white mt-11 font-bold'>Welcome , start chat with u friends</p>}
 
             </Body>
 

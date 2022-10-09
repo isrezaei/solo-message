@@ -32,7 +32,12 @@ const chatsReducer = createSlice({
         DATA_BASE_LOGIN_USERS : []
     },
 
-    reducers : {},
+    reducers : {
+        RESET_STATUS(state)
+        {
+            state.STATUS = 'idle'
+        }
+    },
 
     extraReducers : (builder => {
 
@@ -63,3 +68,4 @@ const chatsReducer = createSlice({
 })
 
 export default chatsReducer.reducer
+export const {RESET_STATUS} = chatsReducer.actions
