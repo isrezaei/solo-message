@@ -6,7 +6,7 @@ import {db , auth} from "../../config/Firebase";
 import {signOut} from "@firebase/auth";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {useCollection} from "react-firebase-hooks/firestore";
-import {collection, addDoc, getDocs} from "@firebase/firestore";
+import {collection, addDoc, getDocs , setDoc , doc} from "@firebase/firestore";
 import {useState} from "react"
 import {ChatsMessage} from "../Chats.Message/Chats.Message";
 import {ChatsLiveSearch} from "../Chats.LiveSearch/Chats.LiveSearch";
@@ -35,7 +35,7 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
     {
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
         {
-            addDoc(collection(db , 'USERS_CHAT') ,{users : [auth.currentUser?.email  , searchUserInput]})
+           return setDoc(doc(db , 'USERS_CHAT' , `${user?.email}`) ,{users : [auth.currentUser?.email  , searchUserInput]})
         }
         setSearchUserInput('')
     }

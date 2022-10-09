@@ -2,7 +2,17 @@ import {Chats_Rooms_Container , Header , Body , EachMessage , EachAvatar , Foote
 import {useRouter} from "next/router";
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useAuthState} from "react-firebase-hooks/auth";
-import {collection, query, orderBy, addDoc, serverTimestamp, doc, getDoc, where} from "@firebase/firestore";
+import {
+    collection,
+    query,
+    orderBy,
+    addDoc,
+    serverTimestamp,
+    doc,
+    getDoc,
+    where,
+    DocumentData
+} from "@firebase/firestore";
 import {auth} from "../../config/Firebase";
 import {db} from "../../config/Firebase";
 import {Input} from "@mui/material";
@@ -17,6 +27,7 @@ import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
 
 
 
+
 export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {serverSideMessage : any , serverSideUsersLoginData : any}) =>
 {
 
@@ -25,32 +36,39 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
     const router = useRouter()
 
-    const selectQuery = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
 
+
+    const selectQuery = query(collection(db , `USERS_CHAT/${user?.email}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
     const [snapshot , loading , error] = useCollectionData(selectQuery)
 
-
-    useEffect(()=>{
-
-        snapshot?.map((msgData : any) => {
-
-            const currentTime = new Date().getTime()
-
-            if (user?.email !== msgData.email && msgData.timeStamp === currentTime)
-            {
-              return  Notification.requestPermission().then(prem =>
-               {
-                   if (prem === 'granted')
-                   {
-                      return  new Notification("Have New Chat !" , {
-                           body : msgData.text
-                       })
-                   }
-               })
-            }
-        })
-
-    } , [snapshot , user?.email])
+    // useEffect(() : any => {
+    //
+    //     const currentTime = new Date().getTime()
+    //
+    //     const lastMessageFromGuest = snapshot?.filter(msgData => {
+    //         if (user?.email !== msgData.email) return msgData.timeStamp < currentTime
+    //     })?.sort((a : any , b : any) => b.timeStamp - a.timeStamp)
+    //
+    //     if (lastMessageFromGuest)
+    //     {
+    //         const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
+    //         Notification.requestPermission(permission => {
+    //             if (permission === 'granted')
+    //             {
+    //                 return new Notification(`You have new message from ${name}` , {
+    //                     body : text,
+    //                     data : email,
+    //                     image : photo
+    //                 })
+    //             }
+    //             if (permission === 'denied')
+    //             {
+    //                 alert('we need access to notify for new message :)))')
+    //             }
+    //         })
+    //     }
+    //
+    // } , [snapshot , user?.email])
 
 
     const MessageRender = () =>
@@ -61,9 +79,9 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
             return snapshot?.map((msgData : any) => {
                 return (
                     <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
-                            <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
-                            <p className='w-32 text-sm'>{msgData?.text}</p>
-                            <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
+                        <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
+                        <p className='w-32 text-sm'>{msgData?.text}</p>
+                        <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
                     </EachMessage>
                 )
             })
@@ -73,9 +91,9 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
         return serverSideMessage.map((msgData : any) => {
             return (
                 <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
-                        <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
-                        <p className='w-32 text-sm'>{msgData?.text}</p>
-                        <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
+                    <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
+                    <p className='w-32 text-sm'>{msgData?.text}</p>
+                    <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
                 </EachMessage>
             )
         })
@@ -86,7 +104,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     {
         if (inputText)
         {
-            addDoc(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`) , {
+            addDoc(collection(db , `USERS_CHAT/${user?.email}/CHAT_BETWEEN_USERS`) , {
                 text : inputText,
                 photo : user?.photoURL,
                 name : user?.displayName,

@@ -17,20 +17,6 @@ const ServerRender = ({serverSideData} : {serverSideData : any}) =>
 export default ServerRender
 
 
-
-// export const getServerSideProps = async ({params} : any) =>
-// {
-//     const messageArray : any[] = []
-//     const messageQuery = query(collection(db , `USERS_CHAT/${params.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
-//     await getDocs(messageQuery).then(snapshot => snapshot.docs.map(message => messageArray.push(message.data())))
-//
-//     return {
-//         props : {
-//             serverSideData : JSON.stringify(messageArray)
-//         }
-//     }
-// }
-
 export const getStaticPaths  = async () =>
 {
 
@@ -47,13 +33,11 @@ export const getStaticPaths  = async () =>
     }
 }
 
-
 export const getStaticProps = async ({params} : {params :{id : string}}) =>
 {
     const messageArray : any[] = []
-    const messageQuery = query(collection(db , `USERS_CHAT/${params?.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
+    const messageQuery = query(collection(db , `USERS_CHAT/${auth.currentUser?.email}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
     await getDocs(messageQuery).then(snapshot => snapshot.docs.map(message => messageArray.push(message.data())))
-
 
     const usersLoginQuery = collection(db , 'USERS_LOGIN')
     const usersLoginData = await getDocs(usersLoginQuery).then(snapshot => snapshot.docs.map(users => users.data()))

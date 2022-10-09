@@ -1,7 +1,10 @@
 import {Avatar} from "@mui/material";
 import {useAuthState} from "react-firebase-hooks/auth";
-import {auth} from "../../config/Firebase";
+import {auth, db} from "../../config/Firebase";
 import {useRouter} from "next/router";
+import {collection, orderBy, query} from "@firebase/firestore";
+import {useCollectionData} from "react-firebase-hooks/firestore";
+import {useEffect} from "react";
 
 
 export const ChatsMessage = ({usersInChat , id} : {usersInChat : any , id : string}) =>
@@ -10,6 +13,7 @@ export const ChatsMessage = ({usersInChat , id} : {usersInChat : any , id : stri
     const gustUser = usersInChat?.users.filter((email : any) => email !== user?.email)
 
     const redirect = useRouter()
+
 
     return (
         <div key={Math.random()} onClick={()=> redirect.push(`${id}`)}
