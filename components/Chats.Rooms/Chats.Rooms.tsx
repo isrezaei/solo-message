@@ -1,13 +1,6 @@
 import {Chats_Rooms_Container , Header , Body , EachMessage , EachAvatar , Footer} from "./Chats.Rooms.Style";
 import {useRouter} from "next/router";
-import {
-    useCollectionData,
-    useDocumentDataOnce,
-    useDocumentData,
-    useCollectionOnce,
-    useDocument,
-    useCollection, useCollectionDataOnce
-} from "react-firebase-hooks/firestore";
+import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {collection, query, orderBy, addDoc, serverTimestamp, doc, getDoc, where} from "@firebase/firestore";
 import {auth} from "../../config/Firebase";
@@ -16,7 +9,7 @@ import {Input} from "@mui/material";
 import {Button} from "@mui/material";
 import {Avatar} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TimeAgo from 'timeago-react'
 import moment from "moment";
 import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
@@ -37,6 +30,29 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     const [snapshot , loading , error] = useCollectionData(selectQuery)
 
 
+    useEffect(()=>{
+
+        snapshot?.map((msgData : any) => {
+
+            const currentTime = new Date().getTime()
+
+            if (user?.email !== msgData.email && msgData.timeStamp === currentTime)
+            {
+              return  Notification.requestPermission().then(prem =>
+               {
+                   if (prem === 'granted')
+                   {
+                      return  new Notification("Have New Chat !" , {
+                           body : msgData.text
+                       })
+                   }
+               })
+            }
+        })
+
+    } , [snapshot , user?.email])
+
+
     const MessageRender = () =>
     {
         if (snapshot)
@@ -47,7 +63,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                     <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
                             <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
                             <p className='w-32 text-sm'>{msgData?.text}</p>
-                            <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp?.toDate()?.getTime())?.format('LT')}</p>
+                            <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
                     </EachMessage>
                 )
             })
@@ -75,7 +91,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                 photo : user?.photoURL,
                 name : user?.displayName,
                 email : user?.email,
-                timeStamp : serverTimestamp()
+                timeStamp : new Date().getTime()
             })
         }
         setInputText('')
@@ -99,15 +115,12 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
     return (
         <Chats_Rooms_Container>
-
             <Header>
                 {HeaderChat}
             </Header>
-
             <Body>
                 <MessageRender/>
             </Body>
-
             <Footer>
 
                 <Input placeholder="Type ..." color={'secondary'}  size={'small'} value={inputText} onChange={e => setInputText(e.target.value)}
