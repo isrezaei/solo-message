@@ -5,20 +5,22 @@ import {auth, db} from "../config/Firebase";
 import {Login} from "../components/Login/Login";
 import {useAuthState} from 'react-firebase-hooks/auth';
 import {ChatsCollection} from "../components/Chats.Collection/Chats.Collection";
-import {doc, setDoc, serverTimestamp, collection} from "@firebase/firestore";
+import {doc, setDoc, serverTimestamp, collection, getDocs} from "@firebase/firestore";
 import styled from "styled-components";
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useDispatch, useSelector} from "react-redux";
-import {FETCH_CHAT_DATA} from "../redux/reducer/Chats.Reducer";
+import {FETCH_CHAT_DATA , FETCH_lOGIN_DATA} from "../redux/reducer/Chats.Reducer";
 import {RootState} from "../redux/store/store";
 import {useAppDispatch} from "../redux/store/store";
 
-const Home: NextPage = (props) => {
+export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => {
+
+
 
     const [user, loading , error] = useAuthState(auth);
 
 
-    const CHATS_STATUS = useSelector((state : RootState) => state.ChatsReducer.status)
+    const CHATS_STATUS = useSelector((state : RootState) => state.ChatsReducer.STATUS)
 
     const dispatch = useAppDispatch()
 
@@ -39,8 +41,9 @@ const Home: NextPage = (props) => {
         if (CHATS_STATUS === 'idle')
         {
             dispatch(FETCH_CHAT_DATA())
+            dispatch(FETCH_lOGIN_DATA())
         }
-    } , [])
+    } , [CHATS_STATUS , dispatch])
 
 
 
@@ -48,7 +51,7 @@ const Home: NextPage = (props) => {
 
     if (user)
     {
-        render = <ChatsCollection/>
+        render = <ChatsCollection SERVER_SIDE_DATA_BASE_CHATS_USERS = {DATA_BASE_CHATS_USERS}/>
     }
     if (!user)
     {
@@ -79,3 +82,17 @@ const Home_Container = styled.div`
   background: aliceblue;
   place-items: center;
 `
+
+export const getServerSideProps = async () =>
+{
+    let DATA_BASE_CHATS_USERS : any = []
+    await getDocs(collection(db , 'USERS_CHAT')).then(snapShot => snapShot.docs.map(value => DATA_BASE_CHATS_USERS.push({id : value.id , ...value.data()})))
+
+    console.log(DATA_BASE_CHATS_USERS)
+
+    return {
+        props : {
+            DATA_BASE_CHATS_USERS
+        }
+    }
+}
