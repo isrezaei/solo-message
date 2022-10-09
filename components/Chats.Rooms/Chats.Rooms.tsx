@@ -12,8 +12,6 @@ import SendIcon from '@mui/icons-material/Send';
 import {useEffect, useState} from "react";
 import TimeAgo from 'timeago-react'
 import moment from "moment";
-import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
-
 
 
 
@@ -33,7 +31,6 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     useEffect(() : any => {
 
         const currentTime = new Date().getTime()
-
         const lastMessageFromGuest = snapshot?.filter(msgData => {
             if (user?.email !== msgData.email) return msgData.timeStamp < currentTime
         })?.sort((a : any , b : any) => b.timeStamp - a.timeStamp)
@@ -56,7 +53,6 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                 }
             })
         }
-
     } , [snapshot , user?.email])
 
 

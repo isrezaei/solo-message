@@ -11,7 +11,6 @@ export const ChatsMessage = ({usersInChat , id} : {usersInChat : any , id : stri
 {
     const [user] = useAuthState(auth)
     const gustUser = usersInChat?.users.filter((email : any) => email !== user?.email)
-
     const redirect = useRouter()
 
 

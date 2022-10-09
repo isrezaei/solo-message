@@ -11,13 +11,6 @@ import {useState} from "react"
 import {ChatsMessage} from "../Chats.Message/Chats.Message";
 import {ChatsLiveSearch} from "../Chats.LiveSearch/Chats.LiveSearch";
 import {useSelector , useDispatch} from "react-redux";
-import {StartNewChats} from "../../lib/StartNewChats";
-
-import {useEffect , useLayoutEffect} from "react";
-import ChatsReducer, {FETCH_CHAT_DATA} from "../../redux/reducer/Chats.Reducer";
-import {AnyAction} from "redux";
-import {RootState, useAppDispatch} from "../../redux/store/store";
-
 
 
 export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SIDE_DATA_BASE_CHATS_USERS : any}) =>
@@ -28,9 +21,9 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
 
     const [searchUserInput , setSearchUserInput] = useState<string>('')
 
-
     const existChat = !!DATA_BASE_CHATS_USERS?.find((value : any) => value.users.includes(searchUserInput))
     const existUsersOnDatabase = !!DATA_BASE_LOGIN_USERS?.find((value : any) => value.email === searchUserInput)
+
     const startNewChat = () =>
     {
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
@@ -39,10 +32,6 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
         }
         setSearchUserInput('')
     }
-
-    //
-    // console.log(SERVER_SIDE_DATA_BASE_CHATS_USERS)
-    // console.log(DATA_BASE_CHATS_USERS)
 
 
     let render ;

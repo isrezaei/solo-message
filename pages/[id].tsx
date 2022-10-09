@@ -1,9 +1,7 @@
 import {ChatsRooms} from "../components/Chats.Rooms/Chats.Rooms";
 import {getDocs ,getDoc, query, doc, collection, orderBy, where} from "@firebase/firestore";
 import {db} from "../config/Firebase";
-import {FilterGuestEmail} from "../lib/FilterGuestEmail";
-import {useCollection, useCollectionData} from "react-firebase-hooks/firestore";
-import {auth} from "../config/Firebase";
+
 
 const ServerRender = ({serverSideData} : {serverSideData : any}) =>
 {
@@ -33,10 +31,11 @@ export const getStaticPaths  = async () =>
     }
 }
 
+
 export const getStaticProps = async ({params} : {params :{id : string}}) =>
 {
     const messageArray : any[] = []
-    const messageQuery = query(collection(db , `USERS_CHAT/${auth.currentUser?.email}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
+    const messageQuery = query(collection(db , `USERS_CHAT/${params?.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
     await getDocs(messageQuery).then(snapshot => snapshot.docs.map(message => messageArray.push(message.data())))
 
     const usersLoginQuery = collection(db , 'USERS_LOGIN')

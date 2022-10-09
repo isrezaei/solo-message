@@ -1,15 +1,7 @@
 import {createSlice , createAsyncThunk , createEntityAdapter} from "@reduxjs/toolkit";
-import {useCollection} from "react-firebase-hooks/firestore";
 import {collection} from "@firebase/firestore";
 import {db} from "../../config/Firebase";
 import {getDocs} from "@firebase/firestore";
-
-type existChatsType = [
-    {
-        id : string
-        users : []
-    }
-]
 
 
 export const FETCH_CHAT_DATA = createAsyncThunk('FETCH_CHAT_DATA' , async () => {
