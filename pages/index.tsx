@@ -9,7 +9,7 @@ import {doc, setDoc, serverTimestamp, collection, getDocs, query, orderBy} from 
 import styled from "styled-components";
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useDispatch, useSelector} from "react-redux";
-import {FETCH_CHAT_DATA , FETCH_lOGIN_DATA} from "../redux/reducer/Chats.Reducer";
+import {FETCH_CHAT_DATA, FETCH_lOGIN_DATA, RESET_STATUS} from "../redux/reducer/Chats.Reducer";
 import {RootState} from "../redux/store/store";
 import {useAppDispatch} from "../redux/store/store";
 import {useRouter} from "next/router";
@@ -26,6 +26,11 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
 
     const dispatch = useAppDispatch()
 
+    const selectQuery = collection(db , `USERS_CHAT`)
+    const [snapshot] = useCollectionData(selectQuery)
+
+    console.log(snapshot)
+
 
     useEffect(()=> {
 
@@ -39,6 +44,7 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
     } , [user])
 
 
+
     useEffect(()=> {
         if (CHATS_STATUS === 'idle')
         {
@@ -48,40 +54,11 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
     } , [CHATS_STATUS , dispatch])
 
 
-    const selectQuery = query(collection(db , `USERS_CHAT/${user?.email}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
-    const [snapshot] = useCollectionData(selectQuery)
+    //!when we have new massage from guest in database , redux thunk should be rerender and the new message is displayed
+    useEffect(()=> {
+        if (snapshot) dispatch(RESET_STATUS())
+    } , [dispatch , snapshot])
 
-    console.log(snapshot)
-
-    useEffect(() : any => {
-
-        const currentTime = new Date().getTime()
-
-        const lastMessageFromGuest = snapshot?.filter(msgData => {
-            if (user?.email !== msgData.email) return msgData.timeStamp < currentTime
-        })?.sort((a : any , b : any) => b.timeStamp - a.timeStamp)
-
-        if (lastMessageFromGuest && snapshot?.length !== 0)
-        {
-            const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
-
-            Notification.requestPermission(permission => {
-                if (permission === 'granted')
-                {
-                    return new Notification(`You have new message from ${name}` , {
-                        body : text,
-                        data : email,
-                        image : photo
-                    })
-                }
-                if (permission === 'denied')
-                {
-                    alert('we need access to notify for new message :)))')
-                }
-            })
-        }
-
-    } , [snapshot , user?.email])
 
 
 

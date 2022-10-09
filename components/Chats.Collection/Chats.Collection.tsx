@@ -35,8 +35,6 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
     const existChat = !!DATA_BASE_CHATS_USERS?.find((value : any) => value.users.includes(searchUserInput))
     const existUsersOnDatabase = !!DATA_BASE_LOGIN_USERS?.find((value : any) => value.email === searchUserInput)
 
-    console.log(searchUserInput!== auth.currentUser?.email)
-
     const startNewChat = () =>
     {
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
