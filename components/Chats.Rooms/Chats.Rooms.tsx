@@ -30,25 +30,32 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     const [snapshot , loading , error] = useCollectionData(selectQuery)
 
 
-    useEffect(()=>{
+    useEffect(() : any => {
 
-        snapshot?.map((msgData : any) => {
+        const currentTime = new Date().getTime()
 
-            const currentTime = new Date().getTime()
+        const lastMessageFromGuest = snapshot?.filter(msgData => {
+            if (user?.email !== msgData.email) return msgData.timeStamp < currentTime
+        })?.sort((a : any , b : any) => b.timeStamp - a.timeStamp)
 
-            if (user?.email !== msgData.email && msgData.timeStamp === currentTime)
-            {
-              return  Notification.requestPermission().then(prem =>
-               {
-                   if (prem === 'granted')
-                   {
-                      return  new Notification("Have New Chat !" , {
-                           body : msgData.text
-                       })
-                   }
-               })
-            }
-        })
+        if (lastMessageFromGuest)
+        {
+            const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
+            Notification.requestPermission(permission => {
+                if (permission === 'granted')
+                {
+                    return new Notification(`You have new message from ${name}` , {
+                        body : text,
+                        data : email,
+                        image : photo
+                    })
+                }
+                if (permission === 'denied')
+                {
+                    alert('we need access to notify for new message :)))')
+                }
+            })
+        }
 
     } , [snapshot , user?.email])
 
