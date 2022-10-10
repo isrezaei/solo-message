@@ -29,8 +29,6 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
     const selectQuery = collection(db , `USERS_CHAT`)
     const [snapshot] = useCollectionData(selectQuery)
 
-    console.log(snapshot)
-
 
     useEffect(()=> {
 

@@ -9,63 +9,68 @@ import {Input} from "@mui/material";
 import {Button} from "@mui/material";
 import {Avatar} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import {useEffect, useState} from "react";
+import {useEffect, useLayoutEffect, useState , useRef} from "react";
 import TimeAgo from 'timeago-react'
 import moment from "moment";
+import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
+import {useUpdateEffect} from 'react-use';
 
 
 
 export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {serverSideMessage : any , serverSideUsersLoginData : any}) =>
 {
 
-    const [user] = useAuthState(auth)
+    const [CURRENT_USER] = useAuthState(auth)
     const [inputText , setInputText] = useState<string>('')
 
     const router = useRouter()
 
-    const selectQuery = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
+    //*SELECT EXIST CHATS IN UNIQUE IDS
+    const SELECT_ALL_CHATS_IN_UNIQUE_ID = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`),
+        orderBy('timeStamp' , 'asc'))
+    const [CHATS_DATA_SNAPSHOT , loading , error] = useCollectionData(SELECT_ALL_CHATS_IN_UNIQUE_ID)
+    //*
 
-    const [snapshot , loading , error] = useCollectionData(selectQuery)
+    //?GET GUEST USER EMAIL
+    const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
+    const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0].email
+    //?
+    
+
+    //?GET NEW CHAT FROM GUEST FOR SHOWING NOTIFICATION
+    const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`),
+        where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
+    const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
+    //?
 
 
     //!notify
-    useEffect(() : any => {
+    useUpdateEffect(()  => {
 
-        const currentTime = new Date().getTime()
-        const lastMessageFromGuest = snapshot?.filter(msgData => {
-            if (user?.email !== msgData.email) return msgData.timeStamp < currentTime
-        })?.sort((a : any , b : any) => b.timeStamp - a.timeStamp)
-
-        if (lastMessageFromGuest)
-        {
-            // const {email , name , photo , text , timeStamp} = lastMessageFromGuest[0]
-
-            Notification.requestPermission(permission => {
-                if (permission === 'granted')
-                {
-                    return new Notification(`You have new message from ${name}` , {
-                        body :lastMessageFromGuest[0]?.text,
-                        data :lastMessageFromGuest[0]?.email,
-                        image :lastMessageFromGuest[0]?.photo
+            if (GUEST_USER_SNAPSHOT?.length)
+            {
+                const {name = '' , photo = '' , text = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') new Notification(`You have new message from ${name}` , {
+                        body :text,
+                        image :photo
                     })
-                }
-                if (permission === 'denied')
-                {
-                    alert('we need access to notify for new message :)))')
-                }
-            })
-        }
-    } , [snapshot , user?.email])
+                    if (permission === 'denied') alert('we need access to notify for new message :)))')
+                })
+            }
+    } , [GUEST_USER_SNAPSHOT])
+
 
 
     const MessageRender = () =>
     {
-        if (snapshot)
+        if (CHATS_DATA_SNAPSHOT)
         {
             //get message from firebase
-            return snapshot?.map((msgData : any) => {
+            return CHATS_DATA_SNAPSHOT?.map((msgData : any) => {
+
                 return (
-                    <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
+                    <EachMessage condition={{msgData : msgData?.email , user : CURRENT_USER?.email}} key={Math.random()}>
                             <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
                             <p className='w-32 text-sm'>{msgData?.text}</p>
                             <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
@@ -77,7 +82,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
         //get message data from server side for first render
         return serverSideMessage.map((msgData : any) => {
             return (
-                <EachMessage condition={{msgData : msgData?.email , user : user?.email}} key={Math.random()}>
+                <EachMessage condition={{msgData : msgData?.email , user : CURRENT_USER?.email}} key={Math.random()}>
                         <EachAvatar src={msgData?.photo as string}>{msgData?.name?.slice(0,2).toUpperCase()}</EachAvatar>
                         <p className='w-32 text-sm'>{msgData?.text}</p>
                         <p className='text-[.8rem] !absolute bottom-1'>{moment(msgData?.timeStamp)?.format('LT')}</p>
@@ -93,9 +98,9 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
         {
             addDoc(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`) , {
                 text : inputText,
-                photo : user?.photoURL,
-                name : user?.displayName,
-                email : user?.email,
+                photo : CURRENT_USER?.photoURL,
+                name : CURRENT_USER?.displayName,
+                email : CURRENT_USER?.email,
                 timeStamp : new Date().getTime()
             })
         }
@@ -103,7 +108,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     }
 
 
-    const HeaderChat = serverSideUsersLoginData.filter((loginUsers : any) => loginUsers.email !== user?.email)?.map((guest : any) => {
+    const HeaderChat = serverSideUsersLoginData.filter((loginUsers : any) => loginUsers.email !== CURRENT_USER?.email)?.map((guest : any) => {
         return (
             <div className={'w-full h-full flex flex-col justify-center items-center'} key={Math.random()}>
                 <Avatar src={guest?.photo}>{guest?.name?.slice(0,2).toUpperCase()}</Avatar>
