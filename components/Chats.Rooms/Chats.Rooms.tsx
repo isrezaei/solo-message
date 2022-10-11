@@ -53,11 +53,13 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     useEffect(()=> {
             if (CHATS_DATA_SNAPSHOT_COPY?.sort((a , b) => b.timeStamp - a.timeStamp)[0]?.email !== CURRENT_USER?.email)
             {
-                setReRenderNotify(Math.random)
+               return setReRenderNotify(Math.random)
             }
 
     } , [CHATS_DATA_SNAPSHOT , CURRENT_USER?.email])
     //?
+
+    console.log(reRenderNotify)
 
     //!FIRE NOTIFICATION WHEN WE HAVE NEW MESSAGE FROM THE GUEST
     useUpdateEffect(()  => {
