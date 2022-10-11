@@ -44,7 +44,22 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     //?
 
 
-    //!notify
+    //?IT HAS THE TASK OF RENDERING THE (useUpdateEffect),THE VALUE CHANGES WHEN A NEW MESSAGE COMES FROM THE GUEST
+    const [reRenderNotify , setReRenderNotify] = useState(0)
+    //?
+
+    //?SHALLOW COPY THAN CHATS_DATA_SNAPSHOT , BECAUSE IF YOU USE (CHATS_DATA_SNAPSHOT) DIRECTLY, THE CHRONOLOGICAL ORDER OF THE CHATS WILL BE MESSED UP!
+    const CHATS_DATA_SNAPSHOT_COPY = CHATS_DATA_SNAPSHOT?.map(items => items)
+    useEffect(()=> {
+            if (CHATS_DATA_SNAPSHOT_COPY?.sort((a , b) => b.timeStamp - a.timeStamp)[0]?.email !== CURRENT_USER?.email)
+            {
+                setReRenderNotify(Math.random)
+            }
+
+    } , [CHATS_DATA_SNAPSHOT , CURRENT_USER?.email])
+    //?
+
+    //!FIRE NOTIFICATION WHEN WE HAVE NEW MESSAGE FROM THE GUEST
     useUpdateEffect(()  => {
 
             if (GUEST_USER_SNAPSHOT?.length)
@@ -58,7 +73,8 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
                     if (permission === 'denied') alert('we need access to notify for new message :)))')
                 })
             }
-    } , [GUEST_USER_SNAPSHOT])
+    } , [reRenderNotify])
+    //!
 
 
 
