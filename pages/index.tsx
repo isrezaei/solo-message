@@ -71,40 +71,41 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
 
 
 
+    console.log(USERS_CHATS)
 
 
-    const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
-    const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
-
-
-
-    const CURRENT_USERS_CHAT : any = USERS_CHATS.sort((a : any , b : any) => b?.createTime - a?.createTime)[0]
-
-
-    const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${CURRENT_USERS_CHAT?.id}/CHAT_BETWEEN_USERS`),
-        where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
-
-    const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
-
-    console.log(GUEST_USER_SNAPSHOT && GUEST_USER_SNAPSHOT[0])
-
-    useEffect(()=> {
-
-        if (GUEST_USER_SNAPSHOT?.length)
-        {
-            const {name = '' , photo = '' , text = '' , email = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
-
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') new Notification(`You have new message from ${name}` , {
-                    body :text,
-                    image :photo,
-                    data : email
-                })
-                if (permission === 'denied') alert('we need access to notify for new message :)))')
-            })
-        }
-
-    } , [GUEST_USER_SNAPSHOT])
+    // const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
+    // const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
+    //
+    //
+    //
+    // const CURRENT_USERS_CHAT : any = USERS_CHATS?.sort((a : any , b : any) => b?.createTime - a?.createTime)[0]
+    //
+    //
+    // const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${CURRENT_USERS_CHAT?.id}/CHAT_BETWEEN_USERS`),
+    //     where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
+    //
+    // const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
+    //
+    // console.log(GUEST_USER_SNAPSHOT && GUEST_USER_SNAPSHOT[0])
+    //
+    // useEffect(()=> {
+    //
+    //     if (GUEST_USER_SNAPSHOT?.length)
+    //     {
+    //         const {name = '' , photo = '' , text = '' , email = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
+    //
+    //         Notification.requestPermission().then(permission => {
+    //             if (permission === 'granted') new Notification(`You have new message from ${name}` , {
+    //                 body :text,
+    //                 image :photo,
+    //                 data : email
+    //             })
+    //             if (permission === 'denied') alert('we need access to notify for new message :)))')
+    //         })
+    //     }
+    //
+    // } , [GUEST_USER_SNAPSHOT])
 
 
 
