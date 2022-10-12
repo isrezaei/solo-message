@@ -2,7 +2,7 @@ import {Chats_Rooms_Container , Header , Body , EachMessage , EachAvatar , Foote
 import {useRouter} from "next/router";
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useAuthState} from "react-firebase-hooks/auth";
-import {collection, query, orderBy, addDoc, serverTimestamp, doc, getDoc, where} from "@firebase/firestore";
+import {collection, query, orderBy, addDoc, updateDoc, doc, getDoc, where, getDocs} from "@firebase/firestore";
 import {auth} from "../../config/Firebase";
 import {db} from "../../config/Firebase";
 import {Input} from "@mui/material";
@@ -12,9 +12,8 @@ import SendIcon from '@mui/icons-material/Send';
 import {useEffect, useLayoutEffect, useState , useRef} from "react";
 import TimeAgo from 'timeago-react'
 import moment from "moment";
-import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
-import {useUpdateEffect} from 'react-use';
 
+import {useUpdateEffect , useUnmount} from 'react-use';
 
 
 export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {serverSideMessage : any , serverSideUsersLoginData : any}) =>
@@ -24,6 +23,8 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     const [inputText , setInputText] = useState<string>('')
 
     const router = useRouter()
+
+    console.log(router)
 
     //*SELECT EXIST CHATS IN UNIQUE IDS
     const SELECT_ALL_CHATS_IN_UNIQUE_ID = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`),
@@ -51,33 +52,36 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     //?SHALLOW COPY THAN CHATS_DATA_SNAPSHOT , BECAUSE IF YOU USE (CHATS_DATA_SNAPSHOT) DIRECTLY, THE CHRONOLOGICAL ORDER OF THE CHATS WILL BE MESSED UP!
     const CHATS_DATA_SNAPSHOT_COPY = CHATS_DATA_SNAPSHOT?.map(items => items)
     useEffect(()=> {
+
             if (CHATS_DATA_SNAPSHOT_COPY?.sort((a , b) => b.timeStamp - a.timeStamp)[0]?.email !== CURRENT_USER?.email)
             {
+
+                //!
+                updateDoc(doc(db , 'USERS_CHAT' , `${router.query.id}`) , {
+                    createTime : new Date().getTime()
+                })
+
                return setReRenderNotify(Math.random)
             }
 
     } , [CHATS_DATA_SNAPSHOT , CURRENT_USER?.email])
     //?
 
-    console.log(reRenderNotify)
-
     //!FIRE NOTIFICATION WHEN WE HAVE NEW MESSAGE FROM THE GUEST
     useUpdateEffect(()  => {
-
             if (GUEST_USER_SNAPSHOT?.length)
             {
-                const {name = '' , photo = '' , text = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
+                const {name = '' , photo = '' , text = '' , email = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
                 Notification.requestPermission().then(permission => {
                     if (permission === 'granted') new Notification(`You have new message from ${name}` , {
                         body :text,
-                        image :photo
+                        image :photo,
+                        data : email
                     })
                     if (permission === 'denied') alert('we need access to notify for new message :)))')
                 })
-            }
-    } , [reRenderNotify])
+            }} , [reRenderNotify])
     //!
-
 
 
     const MessageRender = () =>

@@ -5,7 +5,7 @@ import {auth, db} from "../config/Firebase";
 import {Login} from "../components/Login/Login";
 import {useAuthState} from 'react-firebase-hooks/auth';
 import {ChatsCollection} from "../components/Chats.Collection/Chats.Collection";
-import {doc, setDoc, serverTimestamp, collection, getDocs, query, orderBy} from "@firebase/firestore";
+import {doc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, where} from "@firebase/firestore";
 import styled from "styled-components";
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {useDispatch, useSelector} from "react-redux";
@@ -17,30 +17,28 @@ import {useRouter} from "next/router";
 export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => {
 
 
-    const router = useRouter()
-
-    const [user, loading , error] = useAuthState(auth);
+    const [CURRENT_USER, loading , error] = useAuthState(auth);
 
 
     const CHATS_STATUS = useSelector((state : RootState) => state.ChatsReducer.STATUS)
+    const USERS_CHATS = useSelector((state :RootState) => state.ChatsReducer.DATA_BASE_CHATS_USERS)
+
 
     const dispatch = useAppDispatch()
+
 
     const selectQuery = collection(db , `USERS_CHAT`)
     const [snapshot] = useCollectionData(selectQuery)
 
 
     useEffect(()=> {
-
-        user && setDoc(doc(db , 'USERS_LOGIN' , user.uid) , {
-            name : user.displayName,
-            photo : user.photoURL,
-            email : user.email,
+        CURRENT_USER && setDoc(doc(db , 'USERS_LOGIN' , CURRENT_USER.uid) , {
+            name : CURRENT_USER.displayName,
+            photo : CURRENT_USER.photoURL,
+            email : CURRENT_USER.email,
             login : serverTimestamp()
         })
-
-    } , [user])
-
+    } , [CURRENT_USER])
 
 
     useEffect(()=> {
@@ -62,14 +60,52 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
 
     let render ;
 
-    if (user)
+    if (CURRENT_USER)
     {
         render = <ChatsCollection SERVER_SIDE_DATA_BASE_CHATS_USERS = {DATA_BASE_CHATS_USERS}/>
     }
-    if (!user)
+    if (!CURRENT_USER)
     {
         render = <Login/>
     }
+
+
+
+
+
+    const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
+    const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
+
+
+
+    const CURRENT_USERS_CHAT : any = USERS_CHATS.sort((a : any , b : any) => b?.createTime - a?.createTime)[0]
+
+
+    const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${CURRENT_USERS_CHAT?.id}/CHAT_BETWEEN_USERS`),
+        where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
+
+    const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
+
+    console.log(GUEST_USER_SNAPSHOT && GUEST_USER_SNAPSHOT[0])
+
+    useEffect(()=> {
+
+        if (GUEST_USER_SNAPSHOT?.length)
+        {
+            const {name = '' , photo = '' , text = '' , email = ''} = GUEST_USER_SNAPSHOT.sort((a , b) => b.timeStamp - a.timeStamp)[0]
+
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') new Notification(`You have new message from ${name}` , {
+                    body :text,
+                    image :photo,
+                    data : email
+                })
+                if (permission === 'denied') alert('we need access to notify for new message :)))')
+            })
+        }
+
+    } , [GUEST_USER_SNAPSHOT])
+
 
 
     return (
