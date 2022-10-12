@@ -35,14 +35,13 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
     const existChat = !!DATA_BASE_CHATS_USERS?.find((value : any) => value.users.includes(searchUserInput))
     const existUsersOnDatabase = !!DATA_BASE_LOGIN_USERS?.find((value : any) => value.email === searchUserInput)
 
-    const startNewChat = () =>
+    const startNewChat = async () =>
     {
         //!!!!
-        dispatch(RESET_STATUS())
-
         if (searchUserInput!== auth.currentUser?.email && !existChat && EmailValidator.validate(searchUserInput) && existUsersOnDatabase)
         {
-            addDoc(collection(db , 'USERS_CHAT') ,{users : [auth.currentUser?.email  , searchUserInput] , createTime : new Date().getTime()})
+            console.log('new chats')
+           await addDoc(collection(db , 'USERS_CHAT') ,{users : [auth.currentUser?.email  , searchUserInput] , createTime : new Date().getTime()})
         }
         setSearchUserInput('')
     }
@@ -87,7 +86,7 @@ export const ChatsCollection = ({SERVER_SIDE_DATA_BASE_CHATS_USERS} : {SERVER_SI
 
                 {render}
 
-                {SERVER_SIDE_DATA_BASE_CHATS_USERS?.length === 0 && <p className='text-white mt-11 font-bold'>Welcome , start chat with u friends</p>}
+                {/*{SERVER_SIDE_DATA_BASE_CHATS_USERS?.length === 0 && <p className='text-white mt-11 font-bold'>Welcome , start chat with u friends</p>}*/}
 
             </Body>
 

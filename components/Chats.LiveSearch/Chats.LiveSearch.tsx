@@ -35,7 +35,7 @@ export const ChatsLiveSearch = ({searchUser} : {searchUser : string}) =>
     const render = resultSearch?.map((result : any) => {
 
         return (
-            <div key={Math.random()} onClick={()=> router.push(result.id)} className='w-full flex justify-evenly items-center bg-neutral-500'>
+            <div key={Math.random()} className='w-full flex justify-evenly items-center bg-neutral-500'>
                 <Avatar src={result.photo as string}>{result?.name.slice(0 , 2)}</Avatar>
                 <div className='w-9/12 bg-neutral-700 rounded-lg text-white text-sm p-2 '>
                     {result?.name}

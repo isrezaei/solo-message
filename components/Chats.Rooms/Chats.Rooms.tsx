@@ -57,7 +57,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
             {
 
                 //!
-                updateDoc(doc(db , 'USERS_CHAT' , `${router.query.id}`) , {
+                 updateDoc(doc(db , 'USERS_CHAT' , `${router.query.id}`) , {
                     createTime : new Date().getTime()
                 })
 

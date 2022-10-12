@@ -71,9 +71,6 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
 
 
 
-    console.log(USERS_CHATS)
-
-
     // const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
     // const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
     //

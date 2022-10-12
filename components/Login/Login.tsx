@@ -11,8 +11,6 @@ export const Login = () =>
 
     const signIn = () => signInWithGoogle([] , {prompt : 'select_account'})
 
-    console.log(loading)
-
     return (
         <SingIn_Container>
             <p className='text-xl font-bold'>welcome to solo message</p>
