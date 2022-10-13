@@ -14,9 +14,10 @@ import TimeAgo from 'timeago-react'
 import moment from "moment";
 
 import {useUpdateEffect , useUnmount} from 'react-use';
+import {FilterGuestEmail} from "../../lib/FilterGuestEmail";
 
 
-export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {serverSideMessage : any , serverSideUsersLoginData : any}) =>
+export const ChatsRooms = ({serverSideMessage , CURRENT_GUST_USER_DATA , USERS_LOGIN_DATA} : {serverSideMessage : any , CURRENT_GUST_USER_DATA : any , USERS_LOGIN_DATA :any}) =>
 {
 
     const [CURRENT_USER] = useAuthState(auth)
@@ -24,7 +25,6 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
     const router = useRouter()
 
-    console.log(router)
 
     //*SELECT EXIST CHATS IN UNIQUE IDS
     const SELECT_ALL_CHATS_IN_UNIQUE_ID = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`),
@@ -33,14 +33,14 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
     //*
 
     //?GET GUEST USER EMAIL
-    const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
-    const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0].email
+    // const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
+    // const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0].email
     //?
-    
+
 
     //?GET NEW CHAT FROM GUEST FOR SHOWING NOTIFICATION
     const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${router.query.id}/CHAT_BETWEEN_USERS`),
-        where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
+        where('email' , '=='  , `${FilterGuestEmail(CURRENT_USER , USERS_LOGIN_DATA)}`))
     const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
     //?
 
@@ -55,16 +55,14 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
             if (CHATS_DATA_SNAPSHOT_COPY?.sort((a , b) => b.timeStamp - a.timeStamp)[0]?.email !== CURRENT_USER?.email)
             {
-
                 //!
                  updateDoc(doc(db , 'USERS_CHAT' , `${router.query.id}`) , {
                     createTime : new Date().getTime()
                 })
-
                return setReRenderNotify(Math.random)
             }
 
-    } , [CHATS_DATA_SNAPSHOT , CURRENT_USER?.email])
+    } , [CHATS_DATA_SNAPSHOT  , CURRENT_USER?.email])
     //?
 
     //!FIRE NOTIFICATION WHEN WE HAVE NEW MESSAGE FROM THE GUEST
@@ -129,8 +127,7 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
         setInputText('')
     }
 
-
-    const HeaderChat = serverSideUsersLoginData.filter((loginUsers : any) => loginUsers.email !== CURRENT_USER?.email)?.map((guest : any) => {
+    const HeaderChat = CURRENT_GUST_USER_DATA.map((guest : any) => {
         return (
             <div className={'w-full h-full flex flex-col justify-center items-center'} key={Math.random()}>
                 <Avatar src={guest?.photo}>{guest?.name?.slice(0,2).toUpperCase()}</Avatar>
@@ -138,12 +135,11 @@ export const ChatsRooms = ({serverSideMessage , serverSideUsersLoginData} : {ser
 
                 <div className='px-3 gap-1 flex justify-center items-center text-[.8rem] font-bold text-neutral-700'>
                     <p>Last Seen in</p>
-                    <TimeAgo datetime={guest?.login?.nanoseconds} live={true}/>
+                    <TimeAgo datetime={guest?.timeStamp} live={true}/>
                 </div>
             </div>
         )
     })
-
 
     return (
         <Chats_Rooms_Container>

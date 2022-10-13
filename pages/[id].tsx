@@ -1,6 +1,7 @@
 import {ChatsRooms} from "../components/Chats.Rooms/Chats.Rooms";
 import {getDocs ,getDoc, query, doc, collection, orderBy, where} from "@firebase/firestore";
-import {db} from "../config/Firebase";
+import {auth, db} from "../config/Firebase";
+import {FilterGuestEmail} from "../lib/FilterGuestEmail";
 
 
 const ServerRender = ({serverSideData} : {serverSideData : any}) =>
@@ -9,7 +10,8 @@ const ServerRender = ({serverSideData} : {serverSideData : any}) =>
     return (
         <ChatsRooms
             serverSideMessage={JSON.parse(serverSideData.messageData)}
-            serverSideUsersLoginData={JSON.parse(serverSideData.usersLoginData)}/>
+            CURRENT_GUST_USER_DATA={JSON.parse(serverSideData.CURRENT_GUST_USER_DATA)}
+            USERS_LOGIN_DATA={JSON.parse(serverSideData.USERS_LOGIN_DATA)}    />
     )
 }
 export default ServerRender
@@ -38,14 +40,21 @@ export const getStaticProps = async ({params} : {params :{id : string}}) =>
     const messageQuery = query(collection(db , `USERS_CHAT/${params?.id}/CHAT_BETWEEN_USERS`) , orderBy('timeStamp' , 'asc'))
     await getDocs(messageQuery).then(snapshot => snapshot.docs.map(message => messageArray.push(message.data())))
 
-    const usersLoginQuery = collection(db , 'USERS_LOGIN')
-    const usersLoginData = await getDocs(usersLoginQuery).then(snapshot => snapshot.docs.map(users => users.data()))
+
+    //? GET CURRENT GUST USER DATA FOR HEADER OF EACH CHAT ROOM
+    const CURRENT_GUST_USER_DATA : any = []
+    const usersLoginQuery = doc(db , `USERS_CHAT` , `${params?.id}`)
+    const USERS_LOGIN_DATA = await getDoc(usersLoginQuery).then(snapshot => snapshot.data())
+
+    const GET_LOGIN_DATA = query(collection(db , 'USERS_LOGIN') , where('email' , '==' , `${FilterGuestEmail(auth.currentUser?.email , USERS_LOGIN_DATA)}`))
+    await getDocs(GET_LOGIN_DATA).then(snapshot => snapshot.docs.map(message => CURRENT_GUST_USER_DATA.push(message.data())))
 
     return {
         props : {
             serverSideData : {
              messageData : JSON.stringify(messageArray),
-             usersLoginData : JSON.stringify(usersLoginData)
+             CURRENT_GUST_USER_DATA : JSON.stringify(CURRENT_GUST_USER_DATA),
+             USERS_LOGIN_DATA : JSON.stringify(USERS_LOGIN_DATA)
             }
         },
         revalidate : 1

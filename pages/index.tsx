@@ -24,11 +24,14 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
     const USERS_CHATS = useSelector((state :RootState) => state.ChatsReducer.DATA_BASE_CHATS_USERS)
 
 
+
     const dispatch = useAppDispatch()
 
+    const USER_CHAT_DATA_BASE = collection(db , `USERS_CHAT`)
+    const USER_LOGIN_DATA_BASE = collection(db , `USERS_LOGIN`)
 
-    const selectQuery = collection(db , `USERS_CHAT`)
-    const [snapshot] = useCollectionData(selectQuery)
+    const [USER_CHAT_SNAPSHOT] = useCollectionData(USER_CHAT_DATA_BASE)
+    const [USER_LOGIN_SNAPSHOT] = useCollectionData(USER_LOGIN_DATA_BASE)
 
 
     useEffect(()=> {
@@ -44,17 +47,16 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
     useEffect(()=> {
         if (CHATS_STATUS === 'idle')
         {
-            dispatch(FETCH_CHAT_DATA())
             dispatch(FETCH_lOGIN_DATA())
+            dispatch(FETCH_CHAT_DATA())
         }
-    } , [CHATS_STATUS , dispatch])
+    } , [USER_CHAT_SNAPSHOT , USER_LOGIN_SNAPSHOT , CHATS_STATUS , dispatch])
 
 
     //!when we have new massage from guest in database , redux thunk should be rerender and the new message is displayed
     useEffect(()=> {
-        if (snapshot) dispatch(RESET_STATUS())
-    } , [dispatch , snapshot])
-
+        if (USER_CHAT_SNAPSHOT) dispatch(RESET_STATUS())
+    } , [dispatch , USER_CHAT_SNAPSHOT , USER_LOGIN_SNAPSHOT])
 
 
 
@@ -71,20 +73,20 @@ export const Home = ({DATA_BASE_CHATS_USERS}: {DATA_BASE_CHATS_USERS : any}) => 
 
 
 
-    // const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
-    // const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
-    //
-    //
-    //
-    // const CURRENT_USERS_CHAT : any = USERS_CHATS?.sort((a : any , b : any) => b?.createTime - a?.createTime)[0]
-    //
-    //
+
+    const [USER_LOGIN_EMAIL_SNAPSHOT] = useCollectionData(collection(db , 'USERS_LOGIN'))
+    const FILTER_GUEST_USER_FROM_LOGIN = USER_LOGIN_EMAIL_SNAPSHOT?.filter(items => items.email !== CURRENT_USER?.email)[0]?.email
+
+
+    // const CURRENT_USERS_CHAT : any = USERS_CHATS?.sort((a : any , b : any) => b?.createTime - a?.createTime)
+
+    const X = USERS_CHATS.map(items => items).sort((a : any , b : any) => b.createTime - a.createTime)
     // const SELECT_GUEST_MESSAGE = query(collection(db , `USERS_CHAT/${CURRENT_USERS_CHAT?.id}/CHAT_BETWEEN_USERS`),
     //     where('email' , '=='  , `${FILTER_GUEST_USER_FROM_LOGIN}`))
     //
     // const [GUEST_USER_SNAPSHOT] = useCollectionData(SELECT_GUEST_MESSAGE)
     //
-    // console.log(GUEST_USER_SNAPSHOT && GUEST_USER_SNAPSHOT[0])
+    // // console.log(GUEST_USER_SNAPSHOT && GUEST_USER_SNAPSHOT[0])
     //
     // useEffect(()=> {
     //
